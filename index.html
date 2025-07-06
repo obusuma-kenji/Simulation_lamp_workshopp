@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🕌 トルコランプ工房</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #2c1810 0%, #8b4513 30%, #daa520 100%);
+            min-height: 100vh;
+            color: #f4e4c1;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .workshop-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(218, 165, 32, 0.05) 10px,
+                rgba(218, 165, 32, 0.05) 20px
+            );
+            animation: shimmer 15s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ff6b35, #daa520, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .feedback-display {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(218, 165, 32, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            z-index: 1000;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .feedback-display.show {
+            opacity: 1;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #daa520;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-workshop {
+            display: grid;
+            grid-template-columns: 320px 1fr 320px;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(139, 69, 19, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            border-bottom: 2px solid rgba(218, 165, 32, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .work-station {
+            background: rgba(139, 69, 19, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            border: 3px solid rgba(218, 165, 32, 0.4);
+            position: relative;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lamp-workspace {
+            width: 400px;
+            height: 480px;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, rgba(139, 69, 19, 0.3) 70%);
+            border-radius: 20px;
+            position: relative;
+            border: 3px solid rgba(218, 165, 32, 0.5);
+            overflow: hidden;
+            cursor: crosshair;
+            margin-bottom: 20px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .lamp-outline {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 360px;
+            border: 4px solid #daa520;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+            box-shadow: 
+                inset 0 0 30px rgba(218, 165, 32, 0.3),
+                0 0 50px rgba(218, 165, 32, 0.2);
+        }
+
+        .lamp-base {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 80px;
+            background: linear-gradient(45deg, #8b4513, #daa520, #cd853f);
+            border-radius: 12px 12px 0 0;
+            border: 3px solid #654321;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .tool-collection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .tool-card {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .tool-card:hover::before {
+            left: 100%;
+        }
+
+        .tool-card:hover {
+            background: rgba(218, 165, 32, 0.2);
+            transform: translateY(-2px) scale(1.02);
+            border-color: #ffd700;
+            box-shadow: 0 5px 15px rgba(218, 165, 32, 0.3);
+        }
+
+        .tool-card.active {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.25);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .material-palette {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .glass-swatch {
+            width: 100%;
+            height: 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-swatch::before {
+            content: '';
+            position: absolute;
+            top: 8%;
+            left: 8%;
+            width: 25%;
+            height: 25%;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            filter: blur(6px);
+        }
+
+        .glass-swatch:hover {
+            transform: scale(1.08) rotate(3deg);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .glass-swatch.active {
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        .pattern-library {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .pattern-card {
+            padding: 12px;
+            background: rgba(218, 165, 32, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+
+        .pattern-card:hover {
+            border-color: #ffd700;
+            background: rgba(218, 165, 32, 0.2);
+            transform: scale(1.03);
+        }
+
+        .pattern-card.active {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .pattern-preview {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 8px;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .control-center {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-button {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e, #daa520);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .progress-tracker {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(139, 69, 19, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff6b35, #f7931e);
+            width: 0%;
+            transition: width 0.6s ease;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progressShine 2s infinite;
+        }
+
+        @keyframes progressShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: #daa520;
+        }
+
+        .mosaic-piece {
+            position: absolute;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.3);
+        }
+
+        .mosaic-piece:hover {
+            transform: scale(1.15) rotate(10deg);
+            z-index: 100;
+            box-shadow: 
+                0 0 15px currentColor,
+                inset 0 0 12px rgba(255, 255, 255, 0.5);
+        }
+
+        .lamp-glow-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 380px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+        }
+
+        .lamp-glow-effect.active {
+            opacity: 1;
+            background: radial-gradient(ellipse at center, 
+                rgba(255, 215, 0, 0.4) 0%, 
+                rgba(255, 140, 66, 0.3) 30%,
+                rgba(255, 107, 53, 0.2) 60%,
+                transparent 80%);
+            animation: mysticalGlow 3s ease-in-out infinite alternate;
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.6),
+                0 0 80px rgba(255, 140, 66, 0.4),
+                0 0 120px rgba(255, 107, 53, 0.3);
+        }
+
+        @keyframes mysticalGlow {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                filter: brightness(1);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.03);
+                filter: brightness(1.2);
+            }
+        }
+
+        .sparkle-effect {
+            position: absolute;
+            color: #ffd700;
+            font-size: 14px;
+            pointer-events: none;
+            animation: sparkleFloat 1.2s ease-out forwards;
+            text-shadow: 0 0 8px currentColor;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                opacity: 1;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2) rotate(180deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8) rotate(360deg) translateY(-25px);
+            }
+        }
+
+        .cultural-info {
+            background: rgba(139, 69, 19, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .info-tab {
+            background: rgba(218, 165, 32, 0.2);
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .info-tab:hover {
+            background: rgba(218, 165, 32, 0.3);
+            transform: translateX(8px);
+        }
+
+        @media (max-width: 1200px) {
+            .main-workshop {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .panel {
+                max-height: none;
+                overflow: visible;
+            }
+            
+            .lamp-workspace {
+                width: 350px;
+                height: 420px;
+            }
+            
+            .lamp-outline {
+                width: 240px;
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .workshop-container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .main-workshop {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .panel {
+                padding: 15px;
+            }
+            
+            .work-station {
+                padding: 15px;
+                min-height: auto;
+            }
+            
+            .lamp-workspace {
+                width: 320px;
+                height: 400px;
+                touch-action: manipulation;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            
+            .lamp-outline {
+                width: 220px;
+                height: 280px;
+            }
+            
+            .lamp-base {
+                bottom: 30px;
+                width: 80px;
+                height: 60px;
+            }
+            
+            .tool-collection {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .tool-card {
+                padding: 8px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .tool-icon {
+                margin-right: 0;
+                margin-bottom: 5px;
+                width: 35px;
+                height: 35px;
+            }
+            
+            .material-palette {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            
+            .glass-swatch {
+                height: 40px;
+            }
+            
+            .pattern-library {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            
+            .pattern-card {
+                padding: 8px;
+            }
+            
+            .pattern-preview {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 5px;
+            }
+            
+            .control-center {
+                gap: 10px;
+                margin-top: 15px;
+            }
+            
+            .action-button {
+                padding: 10px 16px;
+                font-size: 11px;
+                border-radius: 20px;
+            }
+            
+            .progress-tracker {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                padding: 8px;
+            }
+            
+            .progress-text {
+                font-size: 11px;
+            }
+            
+            .cultural-info {
+                padding: 12px;
+                margin-top: 10px;
+            }
+            
+            .info-tab {
+                padding: 8px;
+                font-size: 13px;
+                margin: 4px 0;
+            }
+            
+            .feedback-display {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                transform: none;
+                padding: 8px 12px;
+                font-size: 13px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .lamp-workspace {
+                width: 280px;
+                height: 350px;
+                touch-action: manipulation;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            
+            .lamp-outline {
+                width: 200px;
+                height: 250px;
+            }
+            
+            .tool-collection, .material-palette {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pattern-library {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .control-center {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-button {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        /* タッチデバイス用の改善 */
+        @media (hover: none) {
+            .tool-card:hover::before,
+            .action-button:hover::before {
+                left: 100%;
+            }
+            
+            .tool-card:active,
+            .glass-swatch:active,
+            .pattern-card:active {
+                transform: scale(0.95);
+            }
+            
+            .action-button:active {
+                transform: translateY(0) scale(0.95);
+            }
+            
+            .mosaic-piece:hover {
+                transform: none;
+            }
+            
+            .mosaic-piece:active {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workshop-container">
+        <div class="header">
+            <h1>🕌 トルコランプ工房</h1>
+            <p class="subtitle">伝統的なモザイクランプ制作の神秘的な世界へようこそ</p>
+        </div>
+
+        <!-- フィードバック表示エリア -->
+        <div class="feedback-display" id="feedbackDisplay"></div>
+
+        <div class="main-workshop">
+            <!-- 左パネル: ツールと技法 -->
+            <div class="panel">
+                <div class="panel-title">🔨 職人の道具箱</div>
+                <div class="tool-collection">
+                    <div class="tool-card active" data-tool="brush">
+                        <div class="tool-icon" style="background: linear-gradient(45deg, #8b4513, #cd853f);">🖌️</div>
+                        <div>
+                            <strong>筆</strong><br>
+                            <small>精密配置</small>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="cutter">
+                        <div class="tool-icon" style="background: linear-gradient(45deg, #c0c0c0, #808080);">✂️</div>
+                        <div>
+                            <strong>カッター</strong><br>
+                            <small>形状作成</small>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="grout">
+                        <div class="tool-icon" style="background: linear-gradient(45deg, #696969, #a9a9a9);">🔨</div>
+                        <div>
+                            <strong>目地材</strong><br>
+                            <small>隙間埋め</small>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="polish">
+                        <div class="tool-icon" style="background: linear-gradient(45deg, #ffd700, #ffed4e);">✨</div>
+                        <div>
+                            <strong>研磨布</strong><br>
+                            <small>仕上げ</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-title" style="margin-top: 20px;">📚 伝統パターン</div>
+                <div class="pattern-library">
+                    <div class="pattern-card active" data-pattern="ottoman">
+                        <div class="pattern-preview" style="background: conic-gradient(from 0deg, #ffd700, #ff6b35, #4ecdc4, #9b59b6, #ffd700);"></div>
+                        <strong>オスマン</strong>
+                    </div>
+                    <div class="pattern-card" data-pattern="geometric">
+                        <div class="pattern-preview" style="background: repeating-conic-gradient(from 0deg, #3498db 0deg 45deg, #e74c3c 45deg 90deg);"></div>
+                        <strong>幾何学</strong>
+                    </div>
+                    <div class="pattern-card" data-pattern="floral">
+                        <div class="pattern-preview" style="background: radial-gradient(circle, #2ecc71 30%, #f39c12 50%, #e74c3c 70%);"></div>
+                        <strong>花卉</strong>
+                    </div>
+                    <div class="pattern-card" data-pattern="spiral">
+                        <div class="pattern-preview" style="background: conic-gradient(from 0deg, #9b59b6, #3498db, #2ecc71, #f39c12, #9b59b6);"></div>
+                        <strong>螺旋</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中央: 作業スペース -->
+            <div class="work-station">
+                <div class="progress-tracker">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        制作進捗: <span id="progressText">0%</span> | 
+                        ピース数: <span id="pieceCount">0</span>個
+                    </div>
+                </div>
+
+                <div class="lamp-workspace" id="lampWorkspace">
+                    <div class="lamp-glow-effect" id="lampGlow"></div>
+                    <div class="lamp-outline"></div>
+                    <div class="lamp-base"></div>
+                </div>
+
+                <div class="control-center">
+                    <button class="action-button" onclick="startTutorial()">📖 ガイド</button>
+                    <button class="action-button" onclick="clearWorkspace()">🗑️ リセット</button>
+                    <button class="action-button" onclick="autoGenerate()">🎨 自動生成</button>
+                    <button class="action-button" onclick="illuminateLamp()">💡 点灯</button>
+                    <button class="action-button" onclick="exportCreation()">💾 保存</button>
+                </div>
+            </div>
+
+            <!-- 右パネル: 材料と情報 -->
+            <div class="panel">
+                <div class="panel-title">🎨 ベネチアンガラス</div>
+                <div class="material-palette">
+                    <div class="glass-swatch active" data-color="#ffd700" style="background: linear-gradient(135deg, #ffd700, #ffed4e);"></div>
+                    <div class="glass-swatch" data-color="#ff6b35" style="background: linear-gradient(135deg, #ff6b35, #ff8c42);"></div>
+                    <div class="glass-swatch" data-color="#4ecdc4" style="background: linear-gradient(135deg, #4ecdc4, #45b7aa);"></div>
+                    <div class="glass-swatch" data-color="#e74c3c" style="background: linear-gradient(135deg, #e74c3c, #c0392b);"></div>
+                    <div class="glass-swatch" data-color="#9b59b6" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);"></div>
+                    <div class="glass-swatch" data-color="#3498db" style="background: linear-gradient(135deg, #3498db, #2980b9);"></div>
+                    <div class="glass-swatch" data-color="#2ecc71" style="background: linear-gradient(135deg, #2ecc71, #27ae60);"></div>
+                    <div class="glass-swatch" data-color="#f39c12" style="background: linear-gradient(135deg, #f39c12, #e67e22);"></div>
+                    <div class="glass-swatch" data-color="#34495e" style="background: linear-gradient(135deg, #34495e, #2c3e50);"></div>
+                </div>
+
+                <div class="cultural-info">
+                    <div class="panel-title" style="margin-bottom: 10px; font-size: 1.1rem;">🏛️ 文化の知識</div>
+                    <div class="info-tab" onclick="showInfo('history')">
+                        📜 ランプの歴史
+                    </div>
+                    <div class="info-tab" onclick="showInfo('technique')">
+                        🎭 伝統技法
+                    </div>
+                    <div class="info-tab" onclick="showInfo('symbolism')">
+                        🔮 色の意味
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTool = 'brush';
+        let currentColor = '#ffd700';
+        let currentPattern = 'ottoman';
+        let mosaicPieces = [];
+        let progress = 0;
+        let isLit = false;
+        let tutorialStep = 0;
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // ツール選択
+            document.querySelectorAll('.tool-card').forEach(tool => {
+                tool.addEventListener('click', function() {
+                    document.querySelectorAll('.tool-card').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTool = this.dataset.tool;
+                    showToolFeedback(currentTool);
+                });
+            });
+
+            // 材料選択
+            document.querySelectorAll('.glass-swatch').forEach(swatch => {
+                swatch.addEventListener('click', function() {
+                    document.querySelectorAll('.glass-swatch').forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                    currentColor = this.dataset.color;
+                    createColorSparkle(this);
+                });
+            });
+
+            // パターン選択
+            document.querySelectorAll('.pattern-card').forEach(pattern => {
+                pattern.addEventListener('click', function() {
+                    document.querySelectorAll('.pattern-card').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPattern = this.dataset.pattern;
+                });
+            });
+
+            // ワークスペースのイベント処理（タッチとマウス両対応）
+            const lampWorkspace = document.getElementById('lampWorkspace');
+            
+            // マウスイベント
+            lampWorkspace.addEventListener('click', handleWorkspaceClick);
+            
+            // タッチイベント（シンプルな方法）
+            lampWorkspace.addEventListener('touchend', function(event) {
+                event.preventDefault();
+                
+                if (event.changedTouches && event.changedTouches.length > 0) {
+                    const touch = event.changedTouches[0];
+                    const rect = lampWorkspace.getBoundingClientRect();
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+
+                    if (isInsideLampOutline(x, y)) {
+                        switch(currentTool) {
+                            case 'brush':
+                                placeMosaicPiece(x, y);
+                                break;
+                            case 'cutter':
+                                createCustomShape(x, y);
+                                break;
+                            case 'grout':
+                                addGroutEffect(x, y);
+                                break;
+                            case 'polish':
+                                polishArea(x, y);
+                                break;
+                        }
+                    }
+                }
+            }, { passive: false });
+        }
+
+        function handleWorkspaceClick(event) {
+            const workspace = document.getElementById('lampWorkspace');
+            const rect = workspace.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            if (isInsideLampOutline(x, y)) {
+                switch(currentTool) {
+                    case 'brush':
+                        placeMosaicPiece(x, y);
+                        break;
+                    case 'cutter':
+                        createCustomShape(x, y);
+                        break;
+                    case 'grout':
+                        addGroutEffect(x, y);
+                        break;
+                    case 'polish':
+                        polishArea(x, y);
+                        break;
+                }
+            }
+        }
+
+        function isInsideLampOutline(x, y) {
+            const workspace = document.getElementById('lampWorkspace');
+            const centerX = workspace.offsetWidth / 2;
+            const centerY = workspace.offsetHeight / 2;
+            
+            // スマホサイズに応じて楕円のサイズを調整
+            let ellipseWidth, ellipseHeight;
+            if (workspace.offsetWidth <= 280) {
+                ellipseWidth = 100;
+                ellipseHeight = 125;
+            } else if (workspace.offsetWidth <= 320) {
+                ellipseWidth = 110;
+                ellipseHeight = 140;
+            } else {
+                ellipseWidth = 140;
+                ellipseHeight = 180;
+            }
+            
+            const normalizedX = (x - centerX) / ellipseWidth;
+            const normalizedY = (y - centerY) / ellipseHeight;
+            
+            return (normalizedX * normalizedX + normalizedY * normalizedY) <= 1;
+        }
+
+        function placeMosaicPiece(x, y) {
+            const piece = document.createElement('div');
+            piece.className = 'mosaic-piece';
+            
+            const size = Math.random() * 8 + 10;
+            piece.style.width = size + 'px';
+            piece.style.height = size + 'px';
+            piece.style.left = (x - size/2) + 'px';
+            piece.style.top = (y - size/2) + 'px';
+            piece.style.background = createGlassGradient(currentColor);
+            piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+            piece.style.zIndex = mosaicPieces.length + 1;
+            piece.style.pointerEvents = 'none'; // タッチイベントの干渉を防ぐ
+            
+            document.getElementById('lampWorkspace').appendChild(piece);
+            mosaicPieces.push(piece);
+            
+            createPlacementSparkle(x, y);
+            updateProgress();
+            
+            // デバッグ用フィードバック
+            showFeedback(`✨ モザイク配置: ${mosaicPieces.length}個目`);
+        }
+
+        function createCustomShape(x, y) {
+            const shape = document.createElement('div');
+            shape.className = 'mosaic-piece';
+            
+            const shapes = [
+                'polygon(50% 0%, 0% 100%, 100% 100%)', 
+                'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
+                'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+            ];
+            
+            const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+            const size = Math.random() * 12 + 15;
+            
+            shape.style.width = size + 'px';
+            shape.style.height = size + 'px';
+            shape.style.left = (x - size/2) + 'px';
+            shape.style.top = (y - size/2) + 'px';
+            shape.style.background = createGlassGradient(currentColor);
+            shape.style.clipPath = randomShape;
+            shape.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            document.getElementById('lampWorkspace').appendChild(shape);
+            mosaicPieces.push(shape);
+            
+            createPlacementSparkle(x, y);
+            updateProgress();
+        }
+
+        function addGroutEffect(x, y) {
+            // 近くのモザイクピース間に目地効果を追加
+            mosaicPieces.forEach(piece => {
+                const pieceRect = piece.getBoundingClientRect();
+                const workspaceRect = document.getElementById('lampWorkspace').getBoundingClientRect();
+                const pieceX = pieceRect.left - workspaceRect.left + pieceRect.width/2;
+                const pieceY = pieceRect.top - workspaceRect.top + pieceRect.height/2;
+                
+                const distance = Math.sqrt((x - pieceX)**2 + (y - pieceY)**2);
+                if (distance < 30) {
+                    piece.style.border = '2px solid #8b7355';
+                    piece.style.boxShadow += ', 0 0 5px rgba(139, 115, 85, 0.5)';
+                }
+            });
+        }
+
+        function polishArea(x, y) {
+            // 周辺のピースを光らせる
+            mosaicPieces.forEach(piece => {
+                const pieceRect = piece.getBoundingClientRect();
+                const workspaceRect = document.getElementById('lampWorkspace').getBoundingClientRect();
+                const pieceX = pieceRect.left - workspaceRect.left + pieceRect.width/2;
+                const pieceY = pieceRect.top - workspaceRect.top + pieceRect.height/2;
+                
+                const distance = Math.sqrt((x - pieceX)**2 + (y - pieceY)**2);
+                if (distance < 40) {
+                    piece.style.filter = 'brightness(1.3) contrast(1.2)';
+                    piece.style.boxShadow += ', 0 0 15px rgba(255, 255, 255, 0.6)';
+                    
+                    setTimeout(() => {
+                        piece.style.filter = 'brightness(1.1)';
+                    }, 1000);
+                }
+            });
+            
+            createPolishSparkle(x, y);
+        }
+
+        function createGlassGradient(baseColor) {
+            const hsl = hexToHsl(baseColor);
+            const lightColor = hslToHex(hsl.h, hsl.s, Math.min(hsl.l + 20, 100));
+            const darkColor = hslToHex(hsl.h, hsl.s, Math.max(hsl.l - 20, 0));
+            
+            return `linear-gradient(135deg, ${lightColor} 0%, ${baseColor} 50%, ${darkColor} 100%)`;
+        }
+
+        function createPlacementSparkle(x, y) {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle-effect';
+                    sparkle.textContent = '✨';
+                    sparkle.style.left = (x + (Math.random() - 0.5) * 20) + 'px';
+                    sparkle.style.top = (y + (Math.random() - 0.5) * 20) + 'px';
+                    sparkle.style.color = currentColor;
+                    
+                    document.getElementById('lampWorkspace').appendChild(sparkle);
+                    
+                    setTimeout(() => sparkle.remove(), 1200);
+                }, i * 100);
+            }
+        }
+
+        function createPolishSparkle(x, y) {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle-effect';
+                    sparkle.textContent = '💎';
+                    sparkle.style.left = (x + (Math.random() - 0.5) * 30) + 'px';
+                    sparkle.style.top = (y + (Math.random() - 0.5) * 30) + 'px';
+                    sparkle.style.color = '#ffffff';
+                    
+                    document.getElementById('lampWorkspace').appendChild(sparkle);
+                    
+                    setTimeout(() => sparkle.remove(), 1200);
+                }, i * 80);
+            }
+        }
+
+        function createColorSparkle(element) {
+            const rect = element.getBoundingClientRect();
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle-effect';
+            sparkle.textContent = '🌟';
+            sparkle.style.left = (rect.width/2) + 'px';
+            sparkle.style.top = (rect.height/2) + 'px';
+            sparkle.style.position = 'absolute';
+            
+            element.style.position = 'relative';
+            element.appendChild(sparkle);
+            
+            setTimeout(() => sparkle.remove(), 1200);
+        }
+
+        function updateProgress() {
+            progress = Math.min((mosaicPieces.length / 80) * 100, 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = Math.round(progress) + '%';
+            document.getElementById('pieceCount').textContent = mosaicPieces.length;
+            
+            // マイルストーン達成時の特別エフェクト（ポップアップなし）
+            if (progress >= 25 && progress < 30) {
+                celebrateMilestone('🎉 素晴らしいスタートです！');
+            } else if (progress >= 50 && progress < 55) {
+                celebrateMilestone('🌟 半分完成しました！');
+            } else if (progress >= 75 && progress < 80) {
+                celebrateMilestone('✨ もう少しで完成です！');
+            } else if (progress >= 100) {
+                celebrateMilestone('🏆 masterpiece完成おめでとうございます！');
+            }
+        }
+
+        function celebrateMilestone(message) {
+            // 画面全体にお祝いエフェクト
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const celebration = document.createElement('div');
+                    celebration.textContent = ['🎊', '🎉', '✨', '🌟'][Math.floor(Math.random() * 4)];
+                    celebration.style.position = 'fixed';
+                    celebration.style.left = Math.random() * window.innerWidth + 'px';
+                    celebration.style.top = Math.random() * window.innerHeight + 'px';
+                    celebration.style.fontSize = '20px';
+                    celebration.style.zIndex = '1000';
+                    celebration.style.pointerEvents = 'none';
+                    celebration.style.animation = 'sparkleFloat 2s ease-out forwards';
+                    
+                    document.body.appendChild(celebration);
+                    
+                    setTimeout(() => celebration.remove(), 2000);
+                }, i * 100);
+            }
+            
+            // フィードバック表示（ポップアップではなく）
+            showFeedback(message);
+        }
+
+        function autoGenerate() {
+            clearWorkspace();
+            
+            const patterns = {
+                ottoman: generateOttomanPattern,
+                geometric: generateGeometricPattern,
+                floral: generateFloralPattern,
+                spiral: generateSpiralPattern
+            };
+            
+            if (patterns[currentPattern]) {
+                setTimeout(() => patterns[currentPattern](), 300);
+            }
+        }
+
+        function generateOttomanPattern() {
+            const colors = ['#ffd700', '#ff6b35', '#4ecdc4', '#9b59b6', '#e74c3c'];
+            const workspace = document.getElementById('lampWorkspace');
+            const centerX = workspace.offsetWidth / 2;
+            const centerY = workspace.offsetHeight / 2;
+            
+            // スマホサイズに応じてパターンサイズを調整
+            const maxRings = workspace.offsetWidth <= 320 ? 3 : 4;
+            const ringSpacing = workspace.offsetWidth <= 320 ? 20 : 25;
+            
+            for (let ring = 1; ring <= maxRings; ring++) {
+                const radius = ring * ringSpacing;
+                const piecesInRing = ring * 6;
+                
+                for (let i = 0; i < piecesInRing; i++) {
+                    setTimeout(() => {
+                        const angle = (i / piecesInRing) * Math.PI * 2;
+                        const x = centerX + Math.cos(angle) * radius;
+                        const y = centerY + Math.sin(angle) * radius;
+                        
+                        const originalColor = currentColor;
+                        currentColor = colors[ring % colors.length];
+                        
+                        if (isInsideLampOutline(x, y)) {
+                            placeMosaicPiece(x, y);
+                        }
+                        
+                        currentColor = originalColor;
+                    }, ring * 150 + i * 30);
+                }
+            }
+        }
+
+        function generateGeometricPattern() {
+            const colors = ['#3498db', '#2ecc71', '#f39c12', '#e74c3c'];
+            const workspace = document.getElementById('lampWorkspace');
+            
+            // スマホサイズに応じてグリッドサイズを調整
+            const gridSize = workspace.offsetWidth <= 320 ? 10 : 12;
+            const spacing = workspace.offsetWidth <= 320 ? 12 : 15;
+            const startX = workspace.offsetWidth <= 320 ? 60 : 80;
+            const startY = workspace.offsetWidth <= 320 ? 100 : 120;
+            
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    setTimeout(() => {
+                        const x = startX + col * spacing;
+                        const y = startY + row * spacing;
+                        
+                        const originalColor = currentColor;
+                        currentColor = colors[(row + col) % colors.length];
+                        
+                        if (isInsideLampOutline(x, y)) {
+                            placeMosaicPiece(x, y);
+                        }
+                        
+                        currentColor = originalColor;
+                    }, (row * gridSize + col) * 20);
+                }
+            }
+        }
+
+        function generateFloralPattern() {
+            const colors = ['#ff6b35', '#ffd700', '#2ecc71', '#9b59b6'];
+            const workspace = document.getElementById('lampWorkspace');
+            const centerX = workspace.offsetWidth / 2;
+            const centerY = workspace.offsetHeight / 2;
+            
+            // スマホサイズに応じて花のサイズを調整
+            const flowerCount = workspace.offsetWidth <= 320 ? 4 : 5;
+            const flowerRadius = workspace.offsetWidth <= 320 ? 40 : 50;
+            const petalRadius = workspace.offsetWidth <= 320 ? 16 : 20;
+            
+            for (let flower = 0; flower < flowerCount; flower++) {
+                const flowerAngle = (flower / flowerCount) * Math.PI * 2;
+                const flowerX = centerX + Math.cos(flowerAngle) * flowerRadius;
+                const flowerY = centerY + Math.sin(flowerAngle) * flowerRadius;
+                
+                for (let petal = 0; petal < 6; petal++) {
+                    setTimeout(() => {
+                        const petalAngle = flowerAngle + (petal / 6) * Math.PI * 2;
+                        const x = flowerX + Math.cos(petalAngle) * petalRadius;
+                        const y = flowerY + Math.sin(petalAngle) * petalRadius;
+                        
+                        const originalColor = currentColor;
+                        currentColor = colors[flower % colors.length];
+                        
+                        if (isInsideLampOutline(x, y)) {
+                            placeMosaicPiece(x, y);
+                        }
+                        
+                        currentColor = originalColor;
+                    }, flower * 250 + petal * 80);
+                }
+            }
+        }
+
+        function generateSpiralPattern() {
+            const colors = ['#9b59b6', '#3498db', '#2ecc71', '#f39c12'];
+            const workspace = document.getElementById('lampWorkspace');
+            const centerX = workspace.offsetWidth / 2;
+            const centerY = workspace.offsetHeight / 2;
+            
+            // スマホサイズに応じて螺旋のサイズを調整
+            const maxPoints = workspace.offsetWidth <= 320 ? 45 : 60;
+            const spiralStep = workspace.offsetWidth <= 320 ? 1.2 : 1.5;
+            
+            for (let i = 0; i < maxPoints; i++) {
+                setTimeout(() => {
+                    const angle = i * 0.4;
+                    const radius = i * spiralStep;
+                    const x = centerX + Math.cos(angle) * radius;
+                    const y = centerY + Math.sin(angle) * radius;
+                    
+                    const originalColor = currentColor;
+                    currentColor = colors[Math.floor(i / 15) % colors.length];
+                    
+                    if (isInsideLampOutline(x, y)) {
+                        placeMosaicPiece(x, y);
+                    }
+                    
+                    currentColor = originalColor;
+                }, i * 50);
+            }
+        }
+
+        function illuminateLamp() {
+            if (mosaicPieces.length < 15) {
+                showFeedback('もっとモザイクピースを配置してから点灯してください！');
+                return;
+            }
+            
+            isLit = !isLit;
+            const lampGlow = document.getElementById('lampGlow');
+            
+            if (isLit) {
+                lampGlow.classList.add('active');
+                showFeedback('✨ ランプが美しく点灯しました！');
+                
+                mosaicPieces.forEach((piece, index) => {
+                    setTimeout(() => {
+                        piece.style.boxShadow += ', 0 0 15px currentColor, inset 0 0 15px rgba(255, 255, 255, 0.4)';
+                        piece.style.filter = 'brightness(1.4) saturate(1.2)';
+                    }, index * 25);
+                });
+            } else {
+                lampGlow.classList.remove('active');
+                showFeedback('💡 ランプを消灯しました');
+                
+                mosaicPieces.forEach(piece => {
+                    piece.style.filter = 'brightness(1) saturate(1)';
+                    piece.style.boxShadow = piece.style.boxShadow.replace(/, 0 0 15px currentColor, inset 0 0 15px rgba\(255, 255, 255, 0\.4\)/g, '');
+                });
+            }
+        }
+
+        function clearWorkspace() {
+            mosaicPieces.forEach(piece => {
+                piece.style.animation = 'sparkleFloat 0.5s ease-out forwards';
+            });
+            
+            setTimeout(() => {
+                mosaicPieces.forEach(piece => piece.remove());
+                mosaicPieces = [];
+                progress = 0;
+                updateProgress();
+                document.getElementById('lampGlow').classList.remove('active');
+                isLit = false;
+            }, 500);
+        }
+
+        function exportCreation() {
+            const creationData = {
+                pieces: mosaicPieces.length,
+                pattern: currentPattern,
+                completionPercentage: Math.round(progress),
+                timestamp: new Date().toLocaleString('ja-JP'),
+            };
+            
+            const exportText = `
+🕌 トルコランプ制作記録
+==================
+制作日時: ${creationData.timestamp}
+使用パターン: ${currentPattern}
+配置ピース数: ${creationData.pieces}個
+完成度: ${creationData.completionPercentage}%
+
+あなたの美しいランプが完成しました！
+この記録を保存して、制作の思い出を残しましょう。
+            `;
+            
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `トルコランプ作品_${new Date().toISOString().slice(0, 10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showFeedback('🎉 作品が保存されました！');
+        }
+
+        function startTutorial() {
+            const tutorialSteps = [
+                '🎯 左側からツールを選択してください',
+                '🎨 右側から好きな色のガラスを選んでください', 
+                '🖱️ ランプの輪郭内をクリックしてモザイクを配置しましょう',
+                '✨ 十分に配置したら「点灯」ボタンを押してみてください',
+                '🎉 美しいトルコランプの出来上がりです！'
+            ];
+            
+            if (tutorialStep < tutorialSteps.length) {
+                showFeedback(tutorialSteps[tutorialStep]);
+                tutorialStep++;
+            } else {
+                showFeedback('🎨 チュートリアル完了！自由に制作を楽しんでください');
+                tutorialStep = 0;
+            }
+        }
+
+        function showInfo(type) {
+            const infoTexts = {
+                history: '🏛️ トルコランプは13世紀のオスマン帝国時代に始まりました。ビザンティン帝国のモザイク技術とイスラム文化の幾何学模様が融合して生まれた美しい芸術作品です。',
+                
+                technique: '🎭 手作業によるガラス切断、精密な配置による光の屈折計算、天然の目地材による仕上げ、代々受け継がれる配色の智慧が伝統技法の秘密です。',
+                
+                symbolism: '🔮 赤は情熱・勇気・愛、青は知識・平和・永遠、黄は富・知恵・光明、緑は自然・成長・希望、紫は神秘・高貴・精神性を表します。'
+            };
+            
+            showFeedback(infoTexts[type]);
+        }
+
+        function showToolFeedback(tool) {
+            const feedbacks = {
+                brush: '🖌️ 筆を選択しました。精密な配置が可能です',
+                cutter: '✂️ カッターを選択しました。カスタム形状を作成できます',
+                grout: '🔨 目地材を選択しました。ピース間を整えられます',
+                polish: '✨ 研磨布を選択しました。輝きを増すことができます'
+            };
+            
+            showFeedback(feedbacks[tool]);
+        }
+
+        function showFeedback(message) {
+            const feedbackDisplay = document.getElementById('feedbackDisplay');
+            feedbackDisplay.textContent = message;
+            feedbackDisplay.classList.add('show');
+            
+            // バイブレーション（対応デバイスのみ）
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            
+            setTimeout(() => {
+                feedbackDisplay.classList.remove('show');
+            }, 3000);
+        }
+
+        // PWA対応の準備
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // サービスワーカーは簡単な実装なので省略
+                console.log('PWA ready');
+            });
+        }
+
+        // スマホ向けの追加設定
+        document.addEventListener('DOMContentLoaded', function() {
+            // ダブルタップズームを無効化
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function (event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            
+            // 初期化
+            setupEventListeners();
+        });
+
+        // ユーティリティ関数
+        function hexToHsl(hex) {
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            
+            return { h: h * 360, s: s * 100, l: l * 100 };
+        }
+
+        function hslToHex(h, s, l) {
+            l /= 100;
+            const a = s * Math.min(l, 1 - l) / 100;
+            const f = n => {
+                const k = (n + h / 30) % 12;
+                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, '0');
+            };
+            return `#${f(0)}${f(8)}${f(4)}`;
+        }
+    </script>
+</body>
+</html>
